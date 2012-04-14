@@ -1,25 +1,11 @@
 
-local gl   = require("opengl")
-local glfw = require("glfw")
+local app = require("app")
 
-glfw.init()
+app:init()
+window = app:createWindow(640, 480, "Derp")
 
-window = glfw.openWindow(640, 480, glfw.WINDOWED, "Derp", nil)
+window.onUpdate = function()
+   print(app.fps)
+end
 
-glfw.swapInterval(0)
-
-local i = 0
-repeat
-
-   i = i + 1
-
-   if glfw.getTime() > 1 then
-      print(i)
-      i = 0
-      glfw.setTime(0)
-   end
-
-   glfw.swapBuffers()
-   glfw.pollEvents()
-
-until glfw.isWindow(window) == 0
+app:start()

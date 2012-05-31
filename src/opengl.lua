@@ -1980,6 +1980,8 @@ void glUniformMatrix4x3fv (GLint location, GLsizei count, GLboolean transpose, c
 local opengl = ffi.load("../deps/glfw/build/src/libglfw.dylib")
 local _M = {}
 
+-- this metatable makes it so we can call "gl.begin" instead of
+-- "gl.glBegin", etc. Caches transformations in the _M table
 setmetatable(_M, { __index = function(tab, key)
    first = key:sub(1, 1)
    v = first:byte(1)

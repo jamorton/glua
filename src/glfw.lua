@@ -343,6 +343,8 @@ void  glfwCopyContext(GLFWwindow src, GLFWwindow dst, unsigned long mask);
 local glfw = ffi.load("../deps/glfw/build/src/libglfw.dylib")
 local _M = {}
 
+-- this metatable makes it so we can call "glfw.openWindow" instead of
+-- "glfw.glfwOpenWindow", etc. Caches transformations in the _M table
 setmetatable(_M, { __index = function(tab, key)
    first = key:sub(1, 1)
    v = first:byte(1)

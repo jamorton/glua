@@ -1,44 +1,48 @@
 
-require "class"
+local class = require "class"
 local glfw = require "glfw"
 
 local App = {time = 0, fps = 0}
 local Window = class()
 
 local windows = {}
-local handles = {}
+local numWindows = 0
 
-function App:init()
+function App.init()
    glfw.init()
 end
 
-function App:start()
-   self.time = glfw.getTime()
+function App.start()
    local frames = 0
-   local nextFPS = self.time + 1
-   while true do
-      self.time = glfw.getTime()
+   local nextFPS = glfw.getTime() + 1
+   while numWindows > 0 do
+      App.time = glfw.getTime()
       frames = frames + 1
 
-      if self.time > nextFPS then
-         self.fps = self.fps * 0.6 + frames * 0.4
+      -- update fps
+      if App.time > nextFPS then
+         App.fps = App.fps * 0.6 + frames * 0.4
          frames = 0
-         nextFPS = self.time + 1
+         nextFPS = App.time + 1
       end
 
-      for k,window in ipairs(windows) do
+      -- update windows
+      for k,window in pairs(windows) do
          window:update()
+         if glfw.isWindow(window.handle) == 0 then
+            windows[window.handle] = nil
+            numWindows = numWindows - 1
+         end
       end
-
    end
+
+   glfw.terminate()
 end
 
-function App:createWindow(width, height, title)
+function App.createWindow(width, height, title)
    win = Window(width, height, title)
-
-   table.insert(windows, win)
-   handles[win.handle] = win
-
+   windows[win.handle] = win
+   numWindows = numWindows + 1
    return win
 end
 
@@ -51,11 +55,14 @@ end
 
 function Window:update()
    glfw.makeContextCurrent(self.handle)
-
    self.onUpdate()
-
    glfw.swapBuffers()
    glfw.pollEvents()
+end
+
+function Window:setTitle(title)
+   glfw.makeContextCurrent(self.handle)
+   glfw.setWindowTitle(title)
 end
 
 return App
